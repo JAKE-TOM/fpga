@@ -3,7 +3,7 @@
 /******************************* Include Files ********************************/
 #include "stdio.h"
 #include "F:\0.zynq\PS_FPGA\5_AXI_GPIO\AXI_GPIO\AXI_GPIO.sdk\AXI_GPIO_bsp_2_bsp_0\ps7_cortexa9_0\include\xparameters.h"
-#include "xscugic.h"
+#include "xintc.h"
 #include "xil_exception.h"
 #include "xil_printf.h"
 #include "sleep.h"
@@ -11,18 +11,18 @@
 #include "F:\0.zynq\PS_FPGA\5_AXI_GPIO\AXI_GPIO\AXI_GPIO.sdk\AXI_GPIO_bsp_2_bsp_0\ps7_cortexa9_0\include\xuartlite.h"
 #include "F:\0.zynq\PS_FPGA\5_AXI_GPIO\AXI_GPIO\AXI_GPIO.sdk\AXI_GPIO_bsp_2_bsp_0\ps7_cortexa9_0\include\xuartlite_l.h"
 ///
-//Æ÷¼þIDºê¶¨Òå
-#define INTC_DEVICE_ID	XPAR_SCUGIC_0_DEVICE_ID		//ÖÐ¶Ï¿ØÖÆÆ÷
-// #define GPIOPS_ID   XPAR_XGPIOPS_0_DEVICE_ID   	//PS¶Ë  GPIOÆ÷¼þ
-#define AXI_UART_ID XPAR_AXI_UARTLITE_0_DEVICE_ID	//PL¶Ë  AXI UARTÆ÷¼þ
-#define UART_INT_ID XPAR_FABRIC_UARTLITE_0_VEC_ID	//PL¶Ë  AXI UARTÖÐ¶Ï
+//ï¿½ï¿½ï¿½ï¿½IDï¿½ê¶¨ï¿½ï¿½
+#define INTC_DEVICE_ID	XPAR_SCUGIC_0_DEVICE_ID		//ï¿½Ð¶Ï¿ï¿½ï¿½ï¿½ï¿½ï¿½
+// #define GPIOPS_ID   XPAR_XGPIOPS_0_DEVICE_ID   	//PSï¿½ï¿½  GPIOï¿½ï¿½ï¿½ï¿½
+#define AXI_UART_ID XPAR_AXI_UARTLITE_0_DEVICE_ID	//PLï¿½ï¿½  AXI UARTï¿½ï¿½ï¿½ï¿½
+#define UART_INT_ID XPAR_FABRIC_UARTLITE_0_VEC_ID	//PLï¿½ï¿½  AXI UARTï¿½Ð¶ï¿½
 
 #define TEST_BUFFER_SIZE        100
-//Á¬½Ó¶Ë¿Úºê¶¨Òå
-// #define MIO_LED1     0   						//PS LED1 Á¬½Óµ½ MIO50
+//ï¿½ï¿½ï¿½Ó¶Ë¿Úºê¶¨ï¿½ï¿½
+// #define MIO_LED1     0   						//PS LED1 ï¿½ï¿½ï¿½Óµï¿½ MIO50
 
-//º¯ÊýÉùÃ÷
-void axi_gpio_intr_handler(void *CallbackRef);		//ÖÐ¶Ï·þÎñº¯Êý
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void axi_gpio_intr_handler(void *CallbackRef);		//ï¿½Ð¶Ï·ï¿½ï¿½ï¿½ï¿½ï¿½
 void axi_uart_init();	
 void SendHandler(void *CallBackRef, unsigned int EventData);
 void RecvHandler(void *CallBackRef, unsigned int EventData);
@@ -31,8 +31,8 @@ int UartLiteSetupIntrSystem(XScuGic *IntcInstancePtr,
 				XUartLite *UartLiteInstPtr,
 				u16 UartLiteIntrId);
 /*
-extern int led_val;								//LEDÏÔÊ¾×´Ì¬
-extern int key_flag;								//ÖÐ¶Ï±êÖ¾
+extern int led_val;								//LEDï¿½ï¿½Ê¾×´Ì¬
+extern int key_flag;								//ï¿½Ð¶Ï±ï¿½Ö¾
 */
 extern XUartLite UartLite;
 

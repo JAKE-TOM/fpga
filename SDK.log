@@ -1973,3 +1973,24 @@ con
 ----------------End of Script----------------
 
 07:50:36 INFO  : Launch script is exported to file 'F:\0.zynq\PS_FPGA\5_AXI_GPIO\AXI_GPIO\AXI_GPIO.sdk\.sdk\launch_scripts\xilinx_c-c++_application_(system_debugger)\system_debugger_on_local.tcl'
+08:20:33 INFO  : SDK has detected change in the last modified timestamps for source hardware specification file Source:1667434820542,  Project:1667028198712
+08:20:33 INFO  : Project AXI_GPIO_wrapper_hw_platform_0's source hardware specification located at F:\0.zynq\PS_FPGA\5_AXI_GPIO\AXI_GPIO\AXI_GPIO.sdk\AXI_GPIO_wrapper.hdf is now different from the local copy.
+		 The local copy will be replaced with the source specification and your workspace will be updated.
+08:20:35 INFO  : Copied contents of F:\0.zynq\PS_FPGA\5_AXI_GPIO\AXI_GPIO\AXI_GPIO.sdk\AXI_GPIO_wrapper.hdf into \AXI_GPIO_wrapper_hw_platform_0\system.hdf.
+08:20:40 INFO  : Synchronizing projects in the workspace with the hardware platform specification changes.
+08:20:58 INFO  : 
+08:20:59 INFO  : Updating hardware inferred compiler options for AXI_GPIO.
+08:20:59 INFO  : Clearing existing target manager status.
+08:20:59 INFO  : Closing and re-opening the MSS file of ther project AXI_GPIO_bsp_2_bsp_0
+08:21:01 INFO  : Closing and re-opening the MSS file of ther project AXI_GPIO_bsp_2_bsp_0
+08:21:01 INFO  : Closing and re-opening the MSS file of ther project AXI_GPIO_bsp_2_bsp_0
+08:21:02 INFO  : Closing and re-opening the MSS file of ther project AXI_GPIO_bsp_2_bsp_0
+08:21:02 INFO  : Closing and re-opening the MSS file of ther project AXI_GPIO_bsp_2_bsp_0
+08:21:03 INFO  : Closing and re-opening the MSS file of ther project AXI_GPIO_bsp_2_bsp_0
+08:21:03 INFO  : Closing and re-opening the MSS file of ther project AXI_GPIO_bsp_2_bsp_0
+08:21:03 INFO  : Closing and re-opening the MSS file of ther project AXI_GPIO_bsp_2_bsp_0
+08:21:04 INFO  : Closing and re-opening the MSS file of ther project AXI_GPIO_bsp_2_bsp_0
+08:21:04 INFO  : Closing and re-opening the MSS file of ther project AXI_GPIO_bsp_2_bsp_0
+08:21:04 INFO  : Closing and re-opening the MSS file of ther project AXI_GPIO_bsp_2_bsp_0
+08:21:05 INFO  : Workspace synchronized with the new hardware specification file. Cleaning dependent projects...
+08:21:10 WARN  : Linker script will not be updated automatically. Users need to update it manually.
