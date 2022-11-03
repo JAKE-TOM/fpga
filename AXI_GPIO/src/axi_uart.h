@@ -3,7 +3,7 @@
 /******************************* Include Files ********************************/
 #include "stdio.h"
 #include "F:\0.zynq\PS_FPGA\5_AXI_GPIO\AXI_GPIO\AXI_GPIO.sdk\AXI_GPIO_bsp_2_bsp_0\ps7_cortexa9_0\include\xparameters.h"
-#include "xintc.h"
+#include "xscugic.h"
 #include "xil_exception.h"
 #include "xil_printf.h"
 #include "sleep.h"
