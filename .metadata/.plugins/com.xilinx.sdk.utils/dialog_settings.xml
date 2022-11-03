@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item value="F:\0.zynq\PS_FPGA\5_AXI_GPIO\AXI_GPIO\AXI_GPIO.sdk\AXI_GPIO\Debug" key="tcf_debug_app_selection"/>
+	<item value="F:\0.zynq\PS_FPGA\5_AXI_GPIO\AXI_GPIO\AXI_GPIO.runs\impl_1" key="debug_files_selection"/>
+	<item value="F:\0.zynq\PS_FPGA\5_AXI_GPIO\AXI_GPIO\AXI_GPIO.sdk" key="hwspec_file_selection"/>
+	<item value="F:\0.zynq\PS_FPGA\5_AXI_GPIO\AXI_GPIO\AXI_GPIO.sdk\AXI_GPIO\Debug" key="last_stored_selection"/>
+</section>

@@ -1,0 +1,39 @@
+#ifndef _AXI_UART_H_
+#define _AXI_UART_H_
+/******************************* Include Files ********************************/
+#include "stdio.h"
+#include "F:\0.zynq\PS_FPGA\5_AXI_GPIO\AXI_GPIO\AXI_GPIO.sdk\AXI_GPIO_bsp_2_bsp_0\ps7_cortexa9_0\include\xparameters.h"
+#include "xscugic.h"
+#include "xil_exception.h"
+#include "xil_printf.h"
+#include "sleep.h"
+
+#include "F:\0.zynq\PS_FPGA\5_AXI_GPIO\AXI_GPIO\AXI_GPIO.sdk\AXI_GPIO_bsp_2_bsp_0\ps7_cortexa9_0\include\xuartlite.h"
+#include "F:\0.zynq\PS_FPGA\5_AXI_GPIO\AXI_GPIO\AXI_GPIO.sdk\AXI_GPIO_bsp_2_bsp_0\ps7_cortexa9_0\include\xuartlite_l.h"
+///
+//器件ID宏定义
+#define INTC_DEVICE_ID	XPAR_SCUGIC_0_DEVICE_ID		//中断控制器
+// #define GPIOPS_ID   XPAR_XGPIOPS_0_DEVICE_ID   	//PS端  GPIO器件
+#define AXI_UART_ID XPAR_AXI_UARTLITE_0_DEVICE_ID	//PL端  AXI UART器件
+#define UART_INT_ID XPAR_FABRIC_UARTLITE_0_VEC_ID	//PL端  AXI UART中断
+
+#define TEST_BUFFER_SIZE        100
+//连接端口宏定义
+// #define MIO_LED1     0   						//PS LED1 连接到 MIO50
+
+//函数声明
+void axi_gpio_intr_handler(void *CallbackRef);		//中断服务函数
+void axi_uart_init();	
+void SendHandler(void *CallBackRef, unsigned int EventData);
+void RecvHandler(void *CallBackRef, unsigned int EventData);
+void axi_uart_intr_handler(void *CallBackRef);
+int UartLiteSetupIntrSystem(XScuGic *IntcInstancePtr,
+				XUartLite *UartLiteInstPtr,
+				u16 UartLiteIntrId);
+/*
+extern int led_val;								//LED显示状态
+extern int key_flag;								//中断标志
+*/
+extern XUartLite UartLite;
+
+#endif /* XDDRPS_H_ */

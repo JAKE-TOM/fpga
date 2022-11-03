@@ -1,0 +1,159 @@
+// --------------------------------------------------------------------
+//
+// Permission:
+//
+//   MicroPhase grants permission to use and modify this code for use
+//   in synthesis for all MicroPhase Development Boards.
+//   Other use of this code, including the selling
+//   ,duplication, or modification of any portion is strictly prohibited.
+//
+// Disclaimer:
+//
+//   This VHDL/Verilog or C/C++ source code is intended as a design reference
+//   which illustrates how these types of functions can be implemented.
+//   It is the user's responsibility to verify their design for
+//   consistency and functionality through the use of formal
+//   verification methods.  MicroPhase provides no warranty regarding the use
+//   or functionality of this code.
+//
+// --------------------------------------------------------------------
+//
+//                     MicroPhase Technologies Inc
+//                     Shanghai, China
+//
+//                     web: http://www.microphase.cn/
+//                     email: support@microphase.cn
+//
+// --------------------------------------------------------------------
+// --------------------------------------------------------------------
+//
+// Major Functions:
+//
+// --------------------------------------------------------------------
+// --------------------------------------------------------------------
+//
+//  Revision History:
+//  Date          By            Revision    Change	 Description
+//---------------------------------------------------------------------
+//2020-02-22      	Wang 		1.0          		Original
+//2020-                         1.1
+// --------------------------------------------------------------------
+// --------------------------------------------------------------------
+#include "axi_uart.h"
+/*
+int led_val;								//LED显示状态
+int key_flag=0;								//中断标志*/
+//PS端GPIO
+u8 SendBuffer[TEST_BUFFER_SIZE];
+u8 ReceiveBuffer[TEST_BUFFER_SIZE];
+
+/*
+ * The following counters are used to determine when the entire buffer has
+ * been sent and received.
+ */
+static volatile int TotalReceivedCount;
+static volatile int TotalSentCount;
+
+
+char q[] = "world";
+//PL端AXI_GPIO
+XUartLite UartLite;
+//中断控制
+XScuGic 		 scugic;					//中断控制器  驱动实例
+XScuGic_Config * scugic_cfg; 				//中断控制器  配置信息
+/*******************/
+
+void axi_uart_init(){
+	int Status;	
+	Status = XUartLite_Initialize(&UartLite, AXI_UART_ID);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}	
+	Status = XUartLite_SelfTest(&UartLite);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}	
+
+	scugic_cfg = XScuGic_LookupConfig(INTC_DEVICE_ID);
+    XScuGic_CfgInitialize(&scugic, scugic_cfg, scugic_cfg->CpuBaseAddress);
+    XScuGic_SetPriorityTriggerType(&scugic, UART_INT_ID, 0xA2, 0x03);
+    //关联中断源AXI_GPIO和中断处理函数axi_gpio_intr_handler
+    XScuGic_Connect(&scugic, UART_INT_ID, axi_uart_intr_handler, &UartLite);
+    //使能AXI GPIO中断
+    XScuGic_Enable(&scugic, UART_INT_ID);
+
+    //设置并打开中断异常处理功能
+    Xil_ExceptionInit();
+    Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
+    		(Xil_ExceptionHandler)XScuGic_InterruptHandler, &scugic);
+    Xil_ExceptionEnable();
+    //
+	//XUartLite_SetSendHandler(&UartLite, SendHandler, &UartLite);
+	//XUartLite_SetRecvHandler(&UartLite, RecvHandler, &UartLite);
+
+	/*
+	 * Enable the interrupt of the UartLite so that interrupts will occur.
+	 */
+	/*XUartLite_EnableInterrupt(&UartLite);
+
+
+    //初始化PL端  AXI GPIO驱动
+    XGpio_Initialize(&axi_gpio, AXI_GPIO_ID);
+    //初始化中断控制器驱动
+	scugic_cfg = XScuGic_LookupConfig(SCUGIC_ID);
+    XScuGic_CfgInitialize(&scugic, scugic_cfg, scugic_cfg->CpuBaseAddress);
+    //配置PL AXI GPIO
+    XGpio_SetDataDirection(&axi_gpio, KEY_CHANNEL, 1); //设置PL AXI GPIO通道1为输入
+    XGpio_InterruptEnable(&axi_gpio, KEY_MASK);		//使能通道1中断
+    XGpio_InterruptGlobalEnable(&axi_gpio);			//使能AXI GPIO全局中断
+    //设置中断优先级和触发类型(高电平触发)
+    XScuGic_SetPriorityTriggerType(&scugic, GPIO_INT_ID, 0xA0, 0x1);
+    //关联中断源AXI_GPIO和中断处理函数axi_gpio_intr_handler
+    XScuGic_Connect(&scugic, GPIO_INT_ID, axi_gpio_intr_handler, &axi_gpio);
+    //使能AXI GPIO中断
+    XScuGic_Enable(&scugic, GPIO_INT_ID);
+
+    //设置并打开中断异常处理功能
+    Xil_ExceptionInit();
+    Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
+    		(Xil_ExceptionHandler)XScuGic_InterruptHandler, &scugic);
+    Xil_ExceptionEnable();
+*/
+
+	
+}
+
+
+/*
+// AXI GPIO 中断服务函数
+void axi_gpio_intr_handler(void *CallbackRef)
+{
+	int key_value = 1;
+	XGpio *GpioPtr = (XGpio *)CallbackRef;
+
+
+	XGpio_InterruptDisable(GpioPtr, KEY_MASK);				//AXI GPIO中断失能
+	key_value = XGpio_DiscreteRead(GpioPtr, KEY_CHANNEL);
+	usleep(100000);												//延时100ms,按键消抖
+	if(key_value == 0){										//判断按键按下
+		key_flag=1;
+	}
+
+	XGpio_InterruptClear(GpioPtr, KEY_MASK);				//清除中断标志
+	XGpio_InterruptEnable(GpioPtr, KEY_MASK);				//AXI GPIO中断使能
+}*/
+/****************************************************************************/
+void axi_uart_intr_handler(void *CallBackRef, unsigned int EventData)
+{
+	TotalSentCount = EventData;
+	XUartLite_Send(&UartLite, q, 5);
+}
+
+/****************************************************************************/
+/****************************************************************************/
+void RecvHandler(void *CallBackRef, unsigned int EventData)
+{
+	TotalReceivedCount = EventData;
+}
+
+/****************************************************************************/

@@ -1,0 +1,72 @@
+// --------------------------------------------------------------------
+//
+// Permission:
+//
+//   MicroPhase grants permission to use and modify this code for use
+//   in synthesis for all MicroPhase Development Boards.
+//   Other use of this code, including the selling
+//   ,duplication, or modification of any portion is strictly prohibited.
+//
+// Disclaimer:
+//
+//   This VHDL/Verilog or C/C++ source code is intended as a design reference
+//   which illustrates how these types of functions can be implemented.
+//   It is the user's responsibility to verify their design for
+//   consistency and functionality through the use of formal
+//   verification methods.  MicroPhase provides no warranty regarding the use
+//   or functionality of this code.
+//
+// --------------------------------------------------------------------
+//
+//                     MicroPhase Technologies Inc
+//                     Shanghai, China
+//
+//                     web: http://www.microphase.cn/
+//                     email: support@microphase.cn
+//
+// --------------------------------------------------------------------
+// --------------------------------------------------------------------
+//
+// Major Functions:
+//
+// --------------------------------------------------------------------
+// --------------------------------------------------------------------
+//
+//  Revision History:
+//  Date          By            Revision    Change	 Description
+//---------------------------------------------------------------------
+//2020-02-22      	Wang 		1.0          		Original
+//2020-                         1.1
+// --------------------------------------------------------------------
+// --------------------------------------------------------------------
+#include "stdio.h"
+#include "xparameters.h"
+#include "xgpiops.h"
+#include "xgpio.h"
+#include "xscugic.h"
+#include "xil_exception.h"
+#include "xil_printf.h"
+#include "sleep.h"
+#include "axi_gpio.h"
+#include "led.h"
+
+
+int main()
+{
+    printf("AXI_GPIO Test!\n");
+
+	axi_gpio_init();
+	ps_led_init();
+    while(1)
+    {
+    	if(key_flag)
+    	{
+    		key_flag=0;
+    		led_val = ~led_val;
+    		XGpioPs_WritePin(&gpiops, MIO_LED1, led_val);	//¸Ä±äLEDÁÁÃð
+    	}
+    }
+
+    return 0;
+}
+

@@ -1,0 +1,147 @@
+// --------------------------------------------------------------------
+//
+// Permission:
+//
+//   MicroPhase grants permission to use and modify this code for use
+//   in synthesis for all MicroPhase Development Boards.
+//   Other use of this code, including the selling
+//   ,duplication, or modification of any portion is strictly prohibited.
+//
+// Disclaimer:
+//
+//   This VHDL/Verilog or C/C++ source code is intended as a design reference
+//   which illustrates how these types of functions can be implemented.
+//   It is the user's responsibility to verify their design for
+//   consistency and functionality through the use of formal
+//   verification methods.  MicroPhase provides no warranty regarding the use
+//   or functionality of this code.
+//
+// --------------------------------------------------------------------
+//
+//                     MicroPhase Technologies Inc
+//                     Shanghai, China
+//
+//                     web: http://www.microphase.cn/
+//                     email: support@microphase.cn
+//
+// --------------------------------------------------------------------
+// --------------------------------------------------------------------
+//
+// Major Functions:
+//
+// --------------------------------------------------------------------
+// --------------------------------------------------------------------
+//
+//  Revision History:
+//  Date          By            Revision    Change	 Description
+//---------------------------------------------------------------------
+//2020-02-22      	Wang 		1.0          		Original
+//2020-                         1.1
+// --------------------------------------------------------------------
+// --------------------------------------------------------------------
+#include "stdio.h"
+#include "xparameters.h"
+#include "xgpiops.h"
+#include "xgpio.h"
+#include "xscugic.h"
+#include "xil_exception.h"
+#include "xil_printf.h"
+#include "sleep.h"
+
+//器件ID宏定义
+#define SCUGIC_ID	XPAR_SCUGIC_0_DEVICE_ID		//中断控制器
+#define GPIOPS_ID   XPAR_XGPIOPS_0_DEVICE_ID   	//PS端  GPIO器件
+#define AXI_GPIO_ID XPAR_AXI_GPIO_0_DEVICE_ID	//PL端  AXI GPIO器件
+#define GPIO_INT_ID XPAR_FABRIC_GPIO_0_VEC_ID	//PL端  AXI GPIO中断
+
+//连接端口宏定义
+#define MIO_LED1     0   						//PS LED1 连接到 MIO50
+#define KEY_CHANNEL  1							//PL_KEY1使用AXI GPIO通道1
+#define KEY_MASK     XGPIO_IR_CH1_MASK 			//通道1的位定义
+
+//函数声明
+void axi_gpio_intr_handler(void *CallbackRef);		//中断服务函数
+
+//PS端GPIO
+XGpioPs          gpiops;     				//PS端 GPIO 驱动实例
+XGpioPs_Config * gpiops_cfg; 				//PS端 GPIO 配置信息
+
+//PL端AXI_GPIO
+XGpio            axi_gpio;					//PL端 AXI GPIO 驱动实例
+//中断控制
+XScuGic 		 scugic;					//中断控制器  驱动实例
+XScuGic_Config * scugic_cfg; 				//中断控制器  配置信息
+
+
+int led_val;								//LED显示状态
+int key_flag=0;								//中断标志
+
+int main()
+{
+    printf("AXI_GPIO Test!\n");
+
+    //初始化PS端  GPIO驱动
+    gpiops_cfg = XGpioPs_LookupConfig(GPIOPS_ID);
+    XGpioPs_CfgInitialize(&gpiops, gpiops_cfg, gpiops_cfg->BaseAddr);
+
+    //初始化PL端  AXI GPIO驱动
+    XGpio_Initialize(&axi_gpio, AXI_GPIO_ID);
+
+    //初始化中断控制器驱动
+	scugic_cfg = XScuGic_LookupConfig(SCUGIC_ID);
+    XScuGic_CfgInitialize(&scugic, scugic_cfg, scugic_cfg->CpuBaseAddress);
+
+    //配置PS GPIO
+    XGpioPs_SetDirectionPin(&gpiops, MIO_LED1, 1);		//设置 PS GPIO 为输出
+    XGpioPs_SetOutputEnablePin(&gpiops, MIO_LED1, 1);	//使能LED输出
+    XGpioPs_WritePin(&gpiops, MIO_LED1, led_val);		//点亮LED
+
+    //配置PL AXI GPIO
+    XGpio_SetDataDirection(&axi_gpio, KEY_CHANNEL, 1); //设置PL AXI GPIO通道1为输入
+    XGpio_InterruptEnable(&axi_gpio, KEY_MASK);		//使能通道1中断
+    XGpio_InterruptGlobalEnable(&axi_gpio);			//使能AXI GPIO全局中断
+
+    //设置中断优先级和触发类型(高电平触发)
+    XScuGic_SetPriorityTriggerType(&scugic, GPIO_INT_ID, 0xA0, 0x1);
+    //关联中断源AXI_GPIO和中断处理函数axi_gpio_intr_handler
+    XScuGic_Connect(&scugic, GPIO_INT_ID, axi_gpio_intr_handler, &axi_gpio);
+    //使能AXI GPIO中断
+    XScuGic_Enable(&scugic, GPIO_INT_ID);
+
+    //设置并打开中断异常处理功能
+    Xil_ExceptionInit();
+    Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
+    		(Xil_ExceptionHandler)XScuGic_InterruptHandler, &scugic);
+    Xil_ExceptionEnable();
+
+    while(1)
+    {
+    	if(key_flag)
+    	{
+    		key_flag=0;
+    		led_val = ~led_val;
+    		XGpioPs_WritePin(&gpiops, MIO_LED1, led_val);	//改变LED亮灭
+    	}
+    }
+
+    return 0;
+}
+
+
+// AXI GPIO 中断服务函数
+void axi_gpio_intr_handler(void *CallbackRef)
+{
+	int key_value = 1;
+	XGpio *GpioPtr = (XGpio *)CallbackRef;
+
+
+	XGpio_InterruptDisable(GpioPtr, KEY_MASK);				//AXI GPIO中断失能
+	key_value = XGpio_DiscreteRead(GpioPtr, KEY_CHANNEL);
+	usleep(100000);												//延时100ms,按键消抖
+	if(key_value == 0){										//判断按键按下
+		key_flag=1;
+	}
+
+	XGpio_InterruptClear(GpioPtr, KEY_MASK);				//清除中断标志
+	XGpio_InterruptEnable(GpioPtr, KEY_MASK);				//AXI GPIO中断使能
+}

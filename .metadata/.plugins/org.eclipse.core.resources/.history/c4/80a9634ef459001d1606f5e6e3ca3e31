@@ -1,0 +1,34 @@
+// --------------------------------------------------------------------
+//
+// --------------------------------------------------------------------
+#include "stdio.h"
+#include "xparameters.h"
+#include "xgpiops.h"
+#include "xgpio.h"
+#include "xscugic.h"
+#include "xil_exception.h"
+#include "xil_printf.h"
+#include "sleep.h"
+#include "axi_gpio.h"
+#include "led.h"
+
+
+int main()
+{
+    printf("AXI_GPIO Test!\n");
+
+	axi_gpio_init();
+	ps_led_init();
+    while(1)
+    {
+    	if(key_flag)
+    	{
+    		key_flag=0;
+    		led_val = ~led_val;
+    		XGpioPs_WritePin(&gpiops, MIO_LED1, led_val);	//¸Ä±äLEDÁÁÃð
+    	}
+    }
+
+    return 0;
+}
+
